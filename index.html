@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Talks Today</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+        }
+
+        #category-search {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .schedule-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .schedule-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .schedule-item.break {
+            background-color: #e9ecef;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .schedule-time {
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+
+        .talk-title {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .talk-speakers {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 1rem;
+        }
+
+        .talk-categories {
+            margin-top: 1rem;
+        }
+
+        .talk-categories span {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tech Talks Today</h1>
+        <p>A one-day event of inspiring tech talks.</p>
+    </header>
+    <main>
+        <div class="search-container">
+            <input type="text" id="category-search" placeholder="Search by category (e.g., AI, Web, Cloud)">
+        </div>
+        <div id="schedule-container"></div>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const talks = [
+                {
+                    title: "The Future of Artificial Intelligence",
+                    speakers: ["Dr. Evelyn Reed"],
+                    categories: ["AI", "Machine Learning"],
+                    duration: 60,
+                    description: "A deep dive into the latest advancements in AI and what we can expect in the coming years."
+                },
+                {
+                    title: "Building Scalable Web Applications",
+                    speakers: ["John Smith", "Jane Doe"],
+                    categories: ["Web", "Cloud", "Architecture"],
+                    duration: 60,
+                    description: "Learn the best practices for designing and building web applications that can handle millions of users."
+                },
+                {
+                    title: "Cybersecurity in a Post-Quantum World",
+                    speakers: ["Dr. Alex Chen"],
+                    categories: ["Security", "Cryptography"],
+                    duration: 60,
+                    description: "An overview of the threats posed by quantum computing and how to prepare for them."
+                },
+                {
+                    title: "The Rise of Serverless Computing",
+                    speakers: ["Maria Garcia"],
+                    categories: ["Cloud", "Serverless"],
+                    duration: 60,
+                    description: "Explore the benefits and challenges of serverless architectures and how to leverage them effectively."
+                },
+                {
+                    title: "Frontend Frameworks: A Comparative Analysis",
+                    speakers: ["David Lee"],
+                    categories: ["Web", "Frontend"],
+                    duration: 60,
+                    description: "A comprehensive comparison of the most popular frontend frameworks: React, Vue, and Angular."
+                },
+                {
+                    title: "The Ethics of AI",
+                    speakers: ["Professor Emily White"],
+                    categories: ["AI", "Ethics"],
+                    duration: 60,
+                    description: "A thought-provoking discussion on the ethical implications of artificial intelligence and our responsibilities as developers."
+                }
+            ];
+
+            const scheduleContainer = document.getElementById('schedule-container');
+            const searchInput = document.getElementById('category-search');
+
+            let startTime = new Date();
+            startTime.setHours(10, 0, 0, 0);
+
+            function formatTime(date) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            function generateSchedule(filter = '') {
+                scheduleContainer.innerHTML = '';
+                let currentTime = new Date(startTime);
+                let talkCounter = 0;
+
+                const filteredTalks = talks.filter(talk => 
+                    filter === '' || talk.categories.some(cat => cat.toLowerCase().includes(filter.toLowerCase()))
+                );
+
+                for (let i = 0; i < talks.length; i++) {
+                    if (talkCounter === 3) {
+                        const lunchBreakItem = document.createElement('div');
+                        lunchBreakItem.className = 'schedule-item break';
+                        const lunchEndTime = new Date(currentTime.getTime() + 60 * 60 * 1000);
+                        lunchBreakItem.innerHTML = `
+                            <div class="schedule-time">${formatTime(currentTime)} - ${formatTime(lunchEndTime)}</div>
+                            <div>Lunch Break</div>
+                        `;
+                        scheduleContainer.appendChild(lunchBreakItem);
+                        currentTime = lunchEndTime;
+                    }
+                    
+                    const talk = talks[i];
+                    if (filteredTalks.includes(talk)) {
+                        const talkEndTime = new Date(currentTime.getTime() + talk.duration * 60 * 1000);
+                        const scheduleItem = document.createElement('div');
+                        scheduleItem.className = 'schedule-item';
+                        scheduleItem.innerHTML = `
+                            <div class="schedule-time">${formatTime(currentTime)} - ${formatTime(talkEndTime)}</div>
+                            <h2 class="talk-title">${talk.title}</h2>
+                            <p class="talk-speakers">By: ${talk.speakers.join(', ')}</p>
+                            <p>${talk.description}</p>
+                            <div class="talk-categories">
+                                ${talk.categories.map(cat => `<span>${cat}</span>`).join('')}
+                            </div>
+                        `;
+                        scheduleContainer.appendChild(scheduleItem);
+                    }
+                    
+                    currentTime = new Date(currentTime.getTime() + (talk.duration + 10) * 60 * 1000);
+                    talkCounter++;
+                }
+            }
+
+            searchInput.addEventListener('input', (e) => {
+                generateSchedule(e.target.value);
+            });
+
+            generateSchedule();
+        });
+    </script>
+</body>
+</html>
